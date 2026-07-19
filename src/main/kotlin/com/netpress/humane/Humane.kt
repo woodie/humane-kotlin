@@ -51,14 +51,15 @@ object Humane {
 
         // Buckets come from distanceInMinutes, not raw seconds re-divided per unit -- see docs/COMMENTS.md.
         val distanceInMinutes = (seconds / 60.0).roundToLong()
-        val (text, approximable) = when {
-            distanceInMinutes == 1L -> "1 minute" to false
-            distanceInMinutes in 2L..44L -> pluralize(distanceInMinutes, "minute") to false
-            distanceInMinutes in 45L..89L -> "1 hour" to true
-            distanceInMinutes in 90L..1439L -> pluralize((distanceInMinutes / 60.0).roundToLong(), "hour") to true
-            distanceInMinutes in 1440L..2519L -> "1 day" to false
-            else -> pluralize((distanceInMinutes / 1440.0).roundToLong(), "day") to false
-        }
+        val (text, approximable) =
+            when {
+                distanceInMinutes == 1L -> "1 minute" to false
+                distanceInMinutes in 2L..44L -> pluralize(distanceInMinutes, "minute") to false
+                distanceInMinutes in 45L..89L -> "1 hour" to true
+                distanceInMinutes in 90L..1439L -> pluralize((distanceInMinutes / 60.0).roundToLong(), "hour") to true
+                distanceInMinutes in 1440L..2519L -> "1 day" to false
+                else -> pluralize((distanceInMinutes / 1440.0).roundToLong(), "day") to false
+            }
 
         val finalText = if (approximate && approximable) "about $text" else text
         return wrap(finalText, future)
@@ -79,11 +80,20 @@ object Humane {
         whenNil: String = "",
     ): String = distanceInTime(at, Instant.now(), approximate, includeSeconds, whenNil)
 
-    private fun wrap(text: String, future: Boolean) = if (future) "in $text" else "$text ago"
+    private fun wrap(
+        text: String,
+        future: Boolean,
+    ) = if (future) "in $text" else "$text ago"
 
-    private fun pluralize(count: Long, unit: String) = if (count == 1L) "1 $unit" else "$count ${unit}s"
+    private fun pluralize(
+        count: Long,
+        unit: String,
+    ) = if (count == 1L) "1 $unit" else "$count ${unit}s"
 
-    private fun formatSignificant(value: Double, sigFigs: Int): String {
+    private fun formatSignificant(
+        value: Double,
+        sigFigs: Int,
+    ): String {
         val magnitude = floor(log10(value)).toInt() + 1
         val decimals = (sigFigs - magnitude).coerceAtLeast(0)
         var s = String.format(Locale.ROOT, "%.${decimals}f", value)
