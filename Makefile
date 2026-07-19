@@ -1,4 +1,4 @@
-.PHONY: build test lint check
+.PHONY: build test lint format check
 
 build:
 	./gradlew build -x test
@@ -12,6 +12,14 @@ test:
 
 lint:
 	./gradlew ktlintCheck
+
+# Auto-fixes the mechanical stuff ktlintCheck flags (parameter-list wrapping,
+# supertype-on-newline, multiline-expression placement, etc.) -- this repo's
+# build.gradle.kts was copied into huck verbatim and huck's own `make build`
+# turned up several such violations there that this repo's `make lint` was
+# never actually run against; same fix applies here if it turns up the same.
+format:
+	./gradlew ktlintFormat
 
 check:
 	./gradlew clean check
