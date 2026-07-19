@@ -62,18 +62,18 @@ comments for the full reasoning.
 
 ## Current status
 
-Freshly scaffolded, not yet built or run anywhere -- the Cowork sandbox has
-no Kotlin/JDK 17+ toolchain (only JDK 11), so `Humane.kt` and the three spec
-files were written by inspection against the established Go/Ruby/Swift
-ports and Kotlin's real language semantics, not verified by compiling. First
-things to do on a real machine:
+`make build` and `make test` both confirmed green on a real Mac (JDK 17
+auto-downloaded via the `foojay-resolver-convention` plugin, added after the
+first `make build` failed looking for a JDK 17 that wasn't installed -- see
+git history). All 42 examples across `HumanSizeSpec`/`DistanceInTimeSpec`/
+`TimeAgoSpec` pass, including every boundary-table cutoff
+(44:29/44:30, 89:29/89:30, 23:59:29/23:59:30) -- the port matches
+`humane`/`humane-ruby`/`humane-swift`'s fixtures exactly. The custom
+`TestListener` tree renders correctly too, confirmed by real console output.
 
-1. `make build` -- confirms `Humane.kt` actually compiles (Kotlin range/`when`
-   syntax, `Instant` arithmetic, and the `formatSignificant`/`Locale.ROOT`
-   formatting are the riskiest bits to have gotten subtly wrong sight-unseen).
-2. `make test` -- confirms every fixture ported from the other three
-   languages produces the same output here.
-3. `make lint` -- `ktlint` hasn't been run against this codebase yet at all.
+`make lint` (`ktlintCheck`) hasn't been run against this codebase yet --
+worth doing before considering this fully done, since `huck`'s equivalent
+check did catch a real style violation on its first run.
 
 ## Requirements
 
