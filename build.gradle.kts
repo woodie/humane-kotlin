@@ -26,25 +26,35 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 
-    // Custom RSpec/ginkgo-fd-style console reporter -- copied from next-caltrain-kotlin's
-    // app/build.gradle.kts (see that file's own comments for the full reasoning). Hooks
-    // Gradle's TestListener API directly to print a dense nested tree from Kotest's flat
-    // per-leaf-test callbacks, with no blank-line padding and no extra tool/binary needed --
-    // Kotest's own DescribeSpec/Gradle's TestDescriptor.parent chain already carry the real
-    // describe/context/it hierarchy, unlike Go's flat `go test -v` output.
+    // Custom RSpec/ginkgo-fd-style console reporter -- copied byte-for-byte from
+    // next-caltrain-kotlin's app/build.gradle.kts (also mirrored into huck; see that
+    // file's own comments for the full reasoning). Hooks Gradle's TestListener API
+    // directly to print a dense nested tree from Kotest's flat per-leaf-test
+    // callbacks, with no blank-line padding and no extra tool/binary needed --
+    // Kotest's own DescribeSpec/Gradle's TestDescriptor.parent chain already carry the
+    // real describe/context/it hierarchy, unlike Go's flat `go test -v` output.
+    //
+    // Kept identical across all three repos on purpose, right down to the
+    // SCREAMING_SNAKE_CASE constant names below (see .editorconfig's
+    // ktlint_standard_property-naming disable, which is what stops ktlintFormat from
+    // silently lowercasing them back to reset/green/red/cyan/gray on every run --
+    // this repo had no .editorconfig at all until that was added, which is the actual
+    // reason this had drifted from caltrain's copy).
     var lastPath: List<String> = emptyList()
 
+    // Respect the NO_COLOR convention (https://no-color.org/) for anyone piping
+    // this into a log file or a terminal that mangles escape codes.
     val colorEnabled = System.getenv("NO_COLOR") == null
-    val reset = "[0m"
-    val green = "[32m"
-    val red = "[31m"
-    val cyan = "[36m"
-    val gray = "[90m"
+    val RESET = "[0m"
+    val GREEN = "[32m"
+    val RED = "[31m"
+    val CYAN = "[36m"
+    val GRAY = "[90m"
 
     fun ansi(
         code: String,
         text: String,
-    ) = if (colorEnabled) "$code$text$reset" else text
+    ) = if (colorEnabled) "$code$text$RESET" else text
 
     fun ancestry(descriptor: TestDescriptor): List<String> {
         val names = mutableListOf<String>()
@@ -56,6 +66,10 @@ tasks.withType<Test> {
         return names
     }
 
+    // Reset dedupe state at actual task-execution time, not here at configuration
+    // time. doFirst always re-runs on every invocation regardless of Gradle's
+    // configuration cache, so this is the one safe place to reset from -- matches
+    // caltrain's own comment on this same line.
     doFirst {
         lastPath = emptyList()
     }
@@ -78,27 +92,36 @@ tasks.withType<Test> {
                 val ancestors = ancestry(testDescriptor)
                 val path = ancestors + testDescriptor.name
 
+                // Print only the part of the path not already printed for the previous
+                // test -- the "dedupe shared prefix" trick that produces a real nested
+                // tree from a flat stream of leaf-test callbacks, with no blank lines.
                 val shared = path.zip(lastPath).takeWhile { (a, b) -> a == b }.count()
                 for (depth in shared until ancestors.size) {
+                    // depth == 0 means ancestors[0] -- the fully-qualified spec class
+                    // name -- is about to be printed for a new top-level suite. A blank
+                    // line goes before every one of those, unconditionally, so each
+                    // suite's block visually stands apart from whatever came before it.
                     if (depth == 0) println()
                     println("  ".repeat(depth) + ancestors[depth])
                 }
 
+                // Mocha's own spec reporter colors the checkmark green and dims the title
+                // for passes; failures and pending get a single solid color instead.
                 val line =
                     when (result.resultType) {
                         TestResult.ResultType.SUCCESS ->
-                            "${ansi(green, "✔")} ${ansi(gray, testDescriptor.name)}"
+                            "${ansi(GREEN, "✔")} ${ansi(GRAY, testDescriptor.name)}"
 
                         TestResult.ResultType.SKIPPED ->
-                            ansi(cyan, "○ ${testDescriptor.name}")
+                            ansi(CYAN, "○ ${testDescriptor.name}")
 
                         else ->
-                            ansi(red, "✖ ${testDescriptor.name}")
+                            ansi(RED, "✖ ${testDescriptor.name}")
                     }
                 println("  ".repeat(ancestors.size) + line)
                 if (result.resultType == TestResult.ResultType.FAILURE) {
                     result.exceptions.forEach { e ->
-                        println("  ".repeat(ancestors.size + 1) + ansi(red, e.message ?: e.toString()))
+                        println("  ".repeat(ancestors.size + 1) + ansi(RED, e.message ?: e.toString()))
                     }
                 }
 

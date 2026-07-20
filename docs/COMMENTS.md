@@ -5,6 +5,23 @@ in the source. Organized by file, then by the type, property, or function
 each note is attached to. See `humane`/`humane-ruby`/`humane-swift`'s own
 `docs/COMMENTS.md` for the pattern this follows.
 
+## build.gradle.kts
+
+### `.editorconfig`'s `ktlint_standard_property-naming` disable
+This repo had no `.editorconfig` at all until huck's `TestListener` reporter
+was traced to be silently drifting from `next-caltrain-kotlin`'s original:
+without a disable for ktlint's `standard:property-naming` rule, every
+`ktlintFormat` run (every `make build`/`test`/`check`, per the Makefile)
+lowercased the reporter's `RESET`/`GREEN`/`RED`/`CYAN`/`GRAY` constants down
+to `reset`/`green`/`red`/`cyan`/`gray` and stripped the fuller rationale
+comments. The printed test output itself was never actually wrong -- the
+algorithm (`ancestry()`, the shared-prefix dedupe, the blank-line-before-
+each-new-suite rule) was already identical to caltrain's -- but the source
+no longer matched byte-for-byte. Fixed by adding the disable here (matching
+caltrain's own `.editorconfig`) and restoring the SCREAMING_SNAKE_CASE names
++ full comments in the `tasks.withType<Test>` block below. Same fix applied
+to huck's copy.
+
 ## src/main/kotlin/com/netpress/humane/Humane.kt
 
 ### `humanSize`'s parameter type

@@ -1,0 +1,15 @@
+root = true
+
+[*.{kt,kts}]
+# build.gradle.kts's custom TestListener reporter (RESET/GREEN/RED/CYAN/GRAY)
+# is meant to be a byte-for-byte copy of next-caltrain-kotlin's original --
+# same rationale, same code, kept in sync across all three repos on purpose.
+# Without this disable, ktlint's standard:property-naming rule silently
+# lowercases those SCREAMING_SNAKE_CASE constants to reset/green/red/cyan/gray
+# every time ktlintFormat runs (which is every build/test/check, per the
+# Makefile) -- this repo had no .editorconfig at all until now, so it drifted
+# the same way huck's copy did. Matches next-caltrain-kotlin's own
+# .editorconfig, which disables this same rule for the same reason (there:
+# to preserve Swift-style camelCase `let` naming; here: to stop it fighting
+# the intentionally-synced constant names).
+ktlint_standard_property-naming = disabled
