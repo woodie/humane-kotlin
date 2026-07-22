@@ -53,12 +53,21 @@ structure" entry and `~/workspace/woodie/docs/COWORK.md`'s "Test structure"
 section for why.
 
 Kotest's `DescribeSpec` renders the real nested tree natively -- no
-`gorderly`-equivalent needed here, unlike Go. `ProjectConfig.kt` pins
-spec/test execution order so full-suite output is reproducible, matching
-`next-caltrain-kotlin`'s own `ProjectConfig`. `build.gradle.kts`'s custom
-`TestListener` (copied from `next-caltrain-kotlin`'s `app/build.gradle.kts`)
-prints that tree as a dense RSpec-`-fd`-style block -- see that file's own
-comments for the full reasoning.
+CLI-wrapper-style tool needed here, unlike Go's `gorderly` or Swift's
+`xctidy`. `ProjectConfig.kt` pins spec/test execution order so full-suite
+output is reproducible, matching `next-caltrain-kotlin`'s own
+`ProjectConfig`. Printing that tree as a dense block used to be a
+byte-for-byte-copied `TestListener` block directly in `build.gradle.kts`
+(also mirrored into `next-caltrain-kotlin`/`huck`); it's now
+[`kotidy`](https://github.com/woodie/kotidy), a real Gradle plugin the
+three repos share instead of hand-syncing -- applied here via
+`pluginManagement { includeBuild("../kotidy") }` +
+`id("com.netpress.kotidy")` + `kotidy { style = "fs" }` in
+`build.gradle.kts`. See `kotidy`'s own `docs/COWORK.md` for the extraction
+history and its README for the full style table (the old block's comments
+called this "RSpec-`-fd`-style," which was never quite accurate --
+checkmark-plus-gray-name is `kotidy`'s `fs`/Mocha-spec style; `fd` is the
+real no-glyph RSpec doc format).
 
 ## Current status
 
