@@ -10,7 +10,7 @@ class DistanceInTimeSpec :
             val base = Instant.parse("2026-07-08T12:00:00Z")
 
             describe(
-                "with no options (the recommended defaults: approximate true, includeSeconds false -- matching ActionView's own defaults)",
+                "with no options",
             ) {
                 var at = base
                 val subject = { Humane.distanceInTime(at, base) }

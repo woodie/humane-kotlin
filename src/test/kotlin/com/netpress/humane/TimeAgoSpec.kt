@@ -12,15 +12,22 @@ import java.time.Instant
 class TimeAgoSpec :
     DescribeSpec({
         describe("Humane.timeAgo") {
+            lateinit var at: Instant
+            val subject = { Humane.timeAgo(at) }
+
             context("just now") {
+                beforeEach { at = Instant.now() }
+
                 it("displays less than a minute ago") {
-                    Humane.timeAgo(Instant.now()) shouldBe "less than a minute ago"
+                    subject() shouldBe "less than a minute ago"
                 }
             }
 
             context("3 minutes ago") {
+                beforeEach { at = Instant.now().minusSeconds(180) }
+
                 it("forwards to distanceInTime with Instant.now() as relativeTo") {
-                    Humane.timeAgo(Instant.now().minusSeconds(180)) shouldBe "3 minutes ago"
+                    subject() shouldBe "3 minutes ago"
                 }
             }
         }

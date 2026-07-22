@@ -23,7 +23,9 @@ Humane.timeAgo(downloadedAt)                       // "3 minutes ago"
 
 ## Requirements
 
-JDK 17+ (see `docs/COWORK.md` for why). Kotlin 2.2.10, matching
+JDK 17+ (not JDK 11 -- `huck` needs 17+ for `jpackage`, and since it
+consumes this library via a Gradle composite build rather than a published
+artifact, both need compatible bytecode). Kotlin 2.2.10, matching
 [`next-caltrain-kotlin`](https://github.com/woodie/next-caltrain-kotlin)'s
 pinned version.
 
@@ -39,5 +41,6 @@ make check   # ./gradlew check
 ## Consumed by
 
 [`huck`](https://github.com/woodie/huck) -- a Windows desktop client, via a
-Gradle composite build (`includeBuild`), not a published artifact. See
-`huck`'s own `docs/COWORK.md`.
+Gradle composite build (`includeBuild("../humane-kotlin")`), not a
+published artifact, so this repo has to exist as a sibling directory on
+disk for `huck` to build -- see `huck`'s own README, "Requirements".
