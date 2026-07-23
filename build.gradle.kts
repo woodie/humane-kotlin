@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "2.2.10"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("com.netpress.kotidy")
+    id("com.netpress.kotidy") version "0.1.0"
 }
 
 group = "com.netpress"

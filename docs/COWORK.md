@@ -60,10 +60,14 @@ output is reproducible, matching `next-caltrain-kotlin`'s own
 byte-for-byte-copied `TestListener` block directly in `build.gradle.kts`
 (also mirrored into `next-caltrain-kotlin`/`huck`); it's now
 [`kotidy`](https://github.com/woodie/kotidy), a real Gradle plugin the
-three repos share instead of hand-syncing -- applied here via
-`pluginManagement { includeBuild("../kotidy") }` +
-`id("com.netpress.kotidy")` + `kotidy { style = "fs" }` in
-`build.gradle.kts`. See `kotidy`'s own `docs/COWORK.md` for the extraction
+three repos share instead of hand-syncing. Originally consumed as a
+composite build; `com.netpress.kotidy` is now approved and live on the
+Gradle Plugin Portal, so `build.gradle.kts` just pins
+`id("com.netpress.kotidy") version "0.1.0"` + `kotidy { style = "fs" }`,
+resolved via the `gradlePluginPortal()` already in
+`settings.gradle.kts`'s `pluginManagement.repositories` -- no sibling
+checkout of `kotidy` needed on disk or in CI anymore (`.github/workflows/CI.yml`
+dropped its old sibling-checkout step). See `kotidy`'s own `docs/COWORK.md` for the extraction
 history and its README for the full style table (the old block's comments
 called this "RSpec-`-fd`-style," which was never quite accurate --
 checkmark-plus-gray-name is `kotidy`'s `fs`/Mocha-spec style; `fd` is the

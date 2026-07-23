@@ -11,26 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checked out to an explicit `humane-kotlin` subpath, not
-      # $GITHUB_WORKSPACE's root -- see the sibling-checkout comment below
-      # for why (same trick huck's own windows-package.yml uses for this
-      # exact repo as its dependency).
-      - name: Check out humane-kotlin
-        uses: actions/checkout@v4
-        with:
-          path: humane-kotlin
-
-      # settings.gradle.kts's pluginManagement { includeBuild("../kotidy") }
-      # needs this to land as a real sibling of humane-kotlin's own checkout
-      # directory -- actions/checkout's `path` is relative to
-      # $GITHUB_WORKSPACE itself, not humane-kotlin's, so both repos end up
-      # as plain subdirectories of $GITHUB_WORKSPACE and therefore true
-      # siblings of each other.
-      - name: Check out kotidy as a sibling checkout
-        uses: actions/checkout@v4
-        with:
-          repository: woodie/kotidy
-          path: kotidy
+      - uses: actions/checkout@v4
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -39,8 +20,11 @@ jobs:
           # Matches humane-kotlin's own jvmToolchain(17).
           java-version: "17"
 
+      # Single checkout is enough now that com.netpress.kotidy resolves from
+      # gradlePluginPortal() (version "0.1.0", approved on the Portal) --
+      # no more sibling checkout of kotidy needed now that it's not a
+      # composite build. See docs/COWORK.md.
       - name: Run checks
-        working-directory: humane-kotlin
         # clean check, not make check -- CI should fail loudly on a style
         # violation, not silently auto-fix it via ktlintFormat and pass
         # anyway. check already runs ktlintCheck + test together.
