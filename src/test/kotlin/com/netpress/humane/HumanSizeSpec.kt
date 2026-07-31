@@ -1,5 +1,6 @@
 package com.netpress.humane
 
+import com.netpress.kwick.justBeforeEach
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 
@@ -7,13 +8,14 @@ class HumanSizeSpec :
     DescribeSpec({
         describe("Humane.humanSize") {
             var bytes = 0L
-            val subject = { Humane.humanSize(bytes) }
+            lateinit var result: String
+            justBeforeEach { result = Humane.humanSize(bytes) }
 
             context("with 0 bytes") {
                 beforeEach { bytes = 0 }
 
                 it("formats as Zero KB, matching ByteCountFormatter's own wording") {
-                    subject() shouldBe "Zero KB"
+                    result shouldBe "Zero KB"
                 }
             }
 
@@ -21,7 +23,7 @@ class HumanSizeSpec :
                 beforeEach { bytes = 1 }
 
                 it("spells out the singular unit") {
-                    subject() shouldBe "1 byte"
+                    result shouldBe "1 byte"
                 }
             }
 
@@ -29,7 +31,7 @@ class HumanSizeSpec :
                 beforeEach { bytes = 7 }
 
                 it("spells out bytes rather than using a B label") {
-                    subject() shouldBe "7 bytes"
+                    result shouldBe "7 bytes"
                 }
             }
 
@@ -37,7 +39,7 @@ class HumanSizeSpec :
                 beforeEach { bytes = 999 }
 
                 it("stays in bytes, just under the 1 KB threshold") {
-                    subject() shouldBe "999 bytes"
+                    result shouldBe "999 bytes"
                 }
             }
 
@@ -45,7 +47,7 @@ class HumanSizeSpec :
                 beforeEach { bytes = 79_992 }
 
                 it("formats as 80 KB") {
-                    subject() shouldBe "80 KB"
+                    result shouldBe "80 KB"
                 }
             }
 
@@ -53,7 +55,7 @@ class HumanSizeSpec :
                 beforeEach { bytes = 225_935 }
 
                 it("matches Finder's reported size") {
-                    subject() shouldBe "226 KB"
+                    result shouldBe "226 KB"
                 }
             }
 
@@ -61,7 +63,7 @@ class HumanSizeSpec :
                 beforeEach { bytes = 500_000 }
 
                 it("matches its output") {
-                    subject() shouldBe "500 KB"
+                    result shouldBe "500 KB"
                 }
             }
 
@@ -69,7 +71,7 @@ class HumanSizeSpec :
                 beforeEach { bytes = 1_500_000 }
 
                 it("shows one decimal place, trailing zero trimmed") {
-                    subject() shouldBe "1.5 MB"
+                    result shouldBe "1.5 MB"
                 }
             }
 
@@ -77,7 +79,7 @@ class HumanSizeSpec :
                 beforeEach { bytes = 5_240_000_000 }
 
                 it("keeps 2 decimal places at 3 significant figures (not truncated to 1)") {
-                    subject() shouldBe "5.24 GB"
+                    result shouldBe "5.24 GB"
                 }
             }
 
@@ -85,7 +87,7 @@ class HumanSizeSpec :
                 beforeEach { bytes = 2_000_000 }
 
                 it("trims both trailing decimal digits") {
-                    subject() shouldBe "2 MB"
+                    result shouldBe "2 MB"
                 }
             }
         }

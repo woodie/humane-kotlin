@@ -1,5 +1,6 @@
 package com.netpress.humane
 
+import com.netpress.kwick.justBeforeEach
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.time.Instant
@@ -13,13 +14,14 @@ class TimeAgoSpec :
     DescribeSpec({
         describe("Humane.timeAgo") {
             lateinit var at: Instant
-            val subject = { Humane.timeAgo(at) }
+            lateinit var result: String
+            justBeforeEach { result = Humane.timeAgo(at) }
 
             context("just now") {
                 beforeEach { at = Instant.now() }
 
                 it("displays less than a minute ago") {
-                    subject() shouldBe "less than a minute ago"
+                    result shouldBe "less than a minute ago"
                 }
             }
 
@@ -27,7 +29,7 @@ class TimeAgoSpec :
                 beforeEach { at = Instant.now().minusSeconds(180) }
 
                 it("forwards to distanceInTime with Instant.now() as relativeTo") {
-                    subject() shouldBe "3 minutes ago"
+                    result shouldBe "3 minutes ago"
                 }
             }
         }

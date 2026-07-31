@@ -1,5 +1,6 @@
 package com.netpress.humane
 
+import com.netpress.kwick.justBeforeEach
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.time.Instant
@@ -13,13 +14,14 @@ class DistanceInTimeSpec :
                 "with no options",
             ) {
                 var at = base
-                val subject = { Humane.distanceInTime(at, base) }
+                lateinit var result: String
+                justBeforeEach { result = Humane.distanceInTime(at, base) }
 
                 context("just now") {
                     beforeEach { at = base }
 
                     it("displays less than a minute ago") {
-                        subject() shouldBe "less than a minute ago"
+                        result shouldBe "less than a minute ago"
                     }
                 }
 
@@ -27,7 +29,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(45) }
 
                     it("rounds up to 1 minute ago (past the 30-second cutoff)") {
-                        subject() shouldBe "1 minute ago"
+                        result shouldBe "1 minute ago"
                     }
                 }
 
@@ -35,7 +37,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(60) }
 
                     it("displays 1 minute ago, singular") {
-                        subject() shouldBe "1 minute ago"
+                        result shouldBe "1 minute ago"
                     }
                 }
 
@@ -43,7 +45,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(180) }
 
                     it("displays 3 minutes ago") {
-                        subject() shouldBe "3 minutes ago"
+                        result shouldBe "3 minutes ago"
                     }
                 }
 
@@ -51,7 +53,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(3600) }
 
                     it("displays about 1 hour ago") {
-                        subject() shouldBe "about 1 hour ago"
+                        result shouldBe "about 1 hour ago"
                     }
                 }
 
@@ -59,7 +61,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(15 * 3600L) }
 
                     it("displays about 15 hours ago") {
-                        subject() shouldBe "about 15 hours ago"
+                        result shouldBe "about 15 hours ago"
                     }
                 }
 
@@ -67,7 +69,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(30 * 3600L) }
 
                     it("rolls up to 1 day ago, with no about (ActionView's table has none on the day bucket)") {
-                        subject() shouldBe "1 day ago"
+                        result shouldBe "1 day ago"
                     }
                 }
 
@@ -75,7 +77,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(3 * 86_400L) }
 
                     it("displays 3 days ago") {
-                        subject() shouldBe "3 days ago"
+                        result shouldBe "3 days ago"
                     }
                 }
 
@@ -83,7 +85,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.plusSeconds(45) }
 
                     it("rounds up to in 1 minute (past the 30-second cutoff)") {
-                        subject() shouldBe "in 1 minute"
+                        result shouldBe "in 1 minute"
                     }
                 }
 
@@ -91,7 +93,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.plusSeconds(180) }
 
                     it("displays in 3 minutes") {
-                        subject() shouldBe "in 3 minutes"
+                        result shouldBe "in 3 minutes"
                     }
                 }
 
@@ -99,20 +101,21 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.plusSeconds(3 * 3600L) }
 
                     it("displays in about 3 hours") {
-                        subject() shouldBe "in about 3 hours"
+                        result shouldBe "in about 3 hours"
                     }
                 }
             }
 
             describe("with includeSeconds: true") {
                 var at = base
-                val subject = { Humane.distanceInTime(at, base, includeSeconds = true) }
+                lateinit var result: String
+                justBeforeEach { result = Humane.distanceInTime(at, base, includeSeconds = true) }
 
                 context("just now") {
                     beforeEach { at = base }
 
                     it("displays 0 seconds ago") {
-                        subject() shouldBe "0 seconds ago"
+                        result shouldBe "0 seconds ago"
                     }
                 }
 
@@ -120,7 +123,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(1) }
 
                     it("displays 1 second ago, singular") {
-                        subject() shouldBe "1 second ago"
+                        result shouldBe "1 second ago"
                     }
                 }
 
@@ -128,7 +131,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(45) }
 
                     it("displays 45 seconds ago") {
-                        subject() shouldBe "45 seconds ago"
+                        result shouldBe "45 seconds ago"
                     }
                 }
 
@@ -136,20 +139,21 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.plusSeconds(45) }
 
                     it("displays in 45 seconds") {
-                        subject() shouldBe "in 45 seconds"
+                        result shouldBe "in 45 seconds"
                     }
                 }
             }
 
             describe("with approximate: false") {
                 var at = base
-                val subject = { Humane.distanceInTime(at, base, approximate = false) }
+                lateinit var result: String
+                justBeforeEach { result = Humane.distanceInTime(at, base, approximate = false) }
 
                 context("1 hour ago") {
                     beforeEach { at = base.minusSeconds(3600) }
 
                     it("displays the exact count, no about prefix") {
-                        subject() shouldBe "1 hour ago"
+                        result shouldBe "1 hour ago"
                     }
                 }
 
@@ -157,7 +161,7 @@ class DistanceInTimeSpec :
                     beforeEach { at = base.minusSeconds(15 * 3600L) }
 
                     it("displays 15 hours ago") {
-                        subject() shouldBe "15 hours ago"
+                        result shouldBe "15 hours ago"
                     }
                 }
             }
@@ -180,13 +184,14 @@ class DistanceInTimeSpec :
             describe("at the approximate-distance bucket table boundaries") {
                 describe("with approximate: false") {
                     var at = base
-                    val subject = { Humane.distanceInTime(at, base, approximate = false) }
+                    lateinit var result: String
+                    justBeforeEach { result = Humane.distanceInTime(at, base, approximate = false) }
 
                     context("29 seconds ago") {
                         beforeEach { at = base.minusSeconds(29) }
 
                         it("stays less than a minute") {
-                            subject() shouldBe "less than a minute ago"
+                            result shouldBe "less than a minute ago"
                         }
                     }
 
@@ -194,7 +199,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(30) }
 
                         it("rounds up to 1 minute") {
-                            subject() shouldBe "1 minute ago"
+                            result shouldBe "1 minute ago"
                         }
                     }
 
@@ -202,7 +207,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(89) }
 
                         it("stays 1 minute") {
-                            subject() shouldBe "1 minute ago"
+                            result shouldBe "1 minute ago"
                         }
                     }
 
@@ -210,7 +215,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(90) }
 
                         it("rounds up to 2 minutes") {
-                            subject() shouldBe "2 minutes ago"
+                            result shouldBe "2 minutes ago"
                         }
                     }
 
@@ -218,7 +223,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(44 * 60L + 29) }
 
                         it("stays 44 minutes") {
-                            subject() shouldBe "44 minutes ago"
+                            result shouldBe "44 minutes ago"
                         }
                     }
 
@@ -226,7 +231,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(44 * 60L + 30) }
 
                         it("rounds up to 1 hour") {
-                            subject() shouldBe "1 hour ago"
+                            result shouldBe "1 hour ago"
                         }
                     }
 
@@ -234,7 +239,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(89 * 60L + 29) }
 
                         it("stays 1 hour") {
-                            subject() shouldBe "1 hour ago"
+                            result shouldBe "1 hour ago"
                         }
                     }
 
@@ -242,7 +247,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(89 * 60L + 30) }
 
                         it("rounds up to 2 hours") {
-                            subject() shouldBe "2 hours ago"
+                            result shouldBe "2 hours ago"
                         }
                     }
 
@@ -250,7 +255,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(23 * 3600L + 59 * 60L + 29) }
 
                         it("stays 24 hours") {
-                            subject() shouldBe "24 hours ago"
+                            result shouldBe "24 hours ago"
                         }
                     }
 
@@ -258,20 +263,21 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(23 * 3600L + 59 * 60L + 30) }
 
                         it("rounds up to 1 day") {
-                            subject() shouldBe "1 day ago"
+                            result shouldBe "1 day ago"
                         }
                     }
                 }
 
                 describe("with no options (approximate true by default)") {
                     var at = base
-                    val subject = { Humane.distanceInTime(at, base) }
+                    lateinit var result: String
+                    justBeforeEach { result = Humane.distanceInTime(at, base) }
 
                     context("44 minutes 29 seconds ago") {
                         beforeEach { at = base.minusSeconds(44 * 60L + 29) }
 
                         it("has no about") {
-                            subject() shouldBe "44 minutes ago"
+                            result shouldBe "44 minutes ago"
                         }
                     }
 
@@ -279,7 +285,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(44 * 60L + 30) }
 
                         it("gains about, entering the hour bucket") {
-                            subject() shouldBe "about 1 hour ago"
+                            result shouldBe "about 1 hour ago"
                         }
                     }
 
@@ -287,7 +293,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(23 * 3600L + 59 * 60L + 29) }
 
                         it("keeps about") {
-                            subject() shouldBe "about 24 hours ago"
+                            result shouldBe "about 24 hours ago"
                         }
                     }
 
@@ -295,7 +301,7 @@ class DistanceInTimeSpec :
                         beforeEach { at = base.minusSeconds(23 * 3600L + 59 * 60L + 30) }
 
                         it("drops about, entering the day bucket") {
-                            subject() shouldBe "1 day ago"
+                            result shouldBe "1 day ago"
                         }
                     }
                 }
