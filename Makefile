@@ -27,6 +27,18 @@ lint:
 format:
 	./gradlew ktlintFormat
 
+# Terser than `test`/`build` on purpose: Gradle's own check task has no quiet
+# mode to pair with the TestListener above, so this just suppresses output on
+# success and dumps the full log on failure, guaranteeing errors are never
+# hidden regardless of the build's exact output -- matching next-caltrain-kotlin's
+# own `check` target.
 check:
-	./gradlew ktlintFormat
-	./gradlew clean check
+	@LOG=$$(mktemp); \
+	if ./gradlew ktlintFormat >> "$$LOG" 2>&1 && ./gradlew clean check >> "$$LOG" 2>&1; then \
+		echo "PASS"; \
+	else \
+		cat "$$LOG"; \
+		rm -f "$$LOG"; \
+		exit 1; \
+	fi; \
+	rm -f "$$LOG"
