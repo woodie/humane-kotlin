@@ -68,7 +68,7 @@ class DistanceInTimeSpec :
                 context("30 hours ago") {
                     beforeEach { at = base.minusSeconds(30 * 3600L) }
 
-                    it("rolls up to 1 day ago, with no about (ActionView's table has none on the day bucket)") {
+                    it("rolls up to 1 day ago, with no about") {
                         result shouldBe "1 day ago"
                     }
                 }
@@ -268,7 +268,7 @@ class DistanceInTimeSpec :
                     }
                 }
 
-                describe("with no options (approximate true by default)") {
+                describe("with no options") {
                     var at = base
                     lateinit var result: String
                     justBeforeEach { result = Humane.distanceInTime(at, base) }

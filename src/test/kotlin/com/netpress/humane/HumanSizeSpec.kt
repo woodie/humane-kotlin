@@ -14,7 +14,7 @@ class HumanSizeSpec :
             context("with 0 bytes") {
                 beforeEach { bytes = 0 }
 
-                it("formats as Zero KB, matching ByteCountFormatter's own wording") {
+                it("formats as Zero KB") {
                     result shouldBe "Zero KB"
                 }
             }
@@ -30,7 +30,7 @@ class HumanSizeSpec :
             context("with a small byte count") {
                 beforeEach { bytes = 7 }
 
-                it("spells out bytes rather than using a B label") {
+                it("spells out bytes") {
                     result shouldBe "7 bytes"
                 }
             }
@@ -38,12 +38,12 @@ class HumanSizeSpec :
             context("with 999 bytes") {
                 beforeEach { bytes = 999 }
 
-                it("stays in bytes, just under the 1 KB threshold") {
+                it("stays in bytes") {
                     result shouldBe "999 bytes"
                 }
             }
 
-            context("with the shared 79992-byte fixture used by lambada scandalous") {
+            context("with 79992 bytes") {
                 beforeEach { bytes = 79_992 }
 
                 it("formats as 80 KB") {
@@ -54,15 +54,15 @@ class HumanSizeSpec :
             context("with a real file's byte count") {
                 beforeEach { bytes = 225_935 }
 
-                it("matches Finder's reported size") {
+                it("formats as 226 KB") {
                     result shouldBe "226 KB"
                 }
             }
 
-            context("with zouk's ByteCountFormatter(.file) fixture") {
+            context("with 500000 bytes") {
                 beforeEach { bytes = 500_000 }
 
-                it("matches its output") {
+                it("formats as 500 KB") {
                     result shouldBe "500 KB"
                 }
             }
