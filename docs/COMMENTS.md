@@ -63,7 +63,17 @@ Matches `humane`'s Go `v0.9.4` change (see that repo's
 belongs to `distanceInTime`'s explicit, fully-tested core, not to the
 one-argument convenience wrapping it. `whenNil` stays in `timeAgo`'s
 signature only for parity with `distanceInTime`'s option set -- it can never
-actually trigger there, same as Go's own vestigial pass-through.
+actually trigger there, same as Go's own vestigial pass-through. Deliberate,
+permanent split across the family -- not brought to parity, unlike the
+`when_nil` default below.
+
+### `whenNil` defaults to `""`
+Already matched `humane` (Go)/`humane-swift` here -- a cross-repo test
+comparison found `humane-ruby` alone defaulting `when_nil:` to `nil`
+instead, inherited from ActionView's own conventions rather than required
+by Ruby. Fixed there, confirming `""` as the deliberate cross-language
+standard rather than a coincidence -- see `humane-ruby`'s own
+`docs/COWORK.md` ("Brought `when_nil` to parity").
 
 ## Test structure
 
