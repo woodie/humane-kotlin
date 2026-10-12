@@ -31,11 +31,10 @@ Publishing never runs locally either: pushing a `v*` tag runs `CI.yml`'s
 
 ## Current status
 
-`v0.1.2` tagged and released on GitHub (`humane` issue #3's rounding fix), but
-**not yet on Maven Central**: the tag-triggered `publish` job failed at
-`signMavenPublication` ("no configured signatory") -- the first CI publish
-since the signing secrets were set, so their stored value is suspect. `v0.1.1`
-is still the latest published. Consumed by `huck` via a plain
-`implementation("com.netpress:humane-kotlin:0.1.1")` -- no sibling checkout or
-composite build (`includeBuild`) needed anymore; that was true through `v0.1.0`
-only.
+`v0.1.2`, **published to Maven Central** as `com.netpress:humane-kotlin` (`humane`
+issue #3's rounding fix) -- the first release published by `CI.yml`'s tag-triggered
+`publish` job, after re-setting the signing secrets to the current key (see
+`woodie/docs/COWORK.md`, "Maven Central signing"). Consumed by `huck` via a plain
+`implementation("com.netpress:humane-kotlin:0.1.1")` until its pin is bumped -- no
+sibling checkout or composite build (`includeBuild`) needed anymore; that was true
+through `v0.1.0` only.
