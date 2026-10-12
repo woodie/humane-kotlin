@@ -31,16 +31,27 @@ gigabyte-scale fixture (`5_240_000_000`) already exceeds `Int`'s ~2.1 billion
 ceiling. Matches Go's `int64` exactly; Ruby has no fixed-width integer
 concern at all.
 
-### Hand-rolled significant-figure math instead of a platform formatter
+### Hand-rolled per-unit rounding instead of a platform formatter
 `humane-swift` delegates straight to `ByteCountFormatter` since macOS/iOS
 uniquely ship one that already matches Finder's own wording. The JVM has no
 equivalent, so this follows `humane`/`humane-ruby`'s hand-rolled approach
-instead: round to 3 significant figures, trim trailing fractional zeros (and
-the decimal point itself if nothing survives), unit-label from `sizeUnits`.
-See those two repos' own `docs/COMMENTS.md` for the fixture history behind
-the 3-significant-figure rule and the zero/byte-scale special cases.
+instead, matching `ByteCountFormatter`'s default ("adaptive") behavior as
+confirmed against real Finder output in `humane` issue #3:
 
-### `formatSignificant` forces `Locale.ROOT`
+- Scale to the unit, then round half up to that unit's `decimalPlaces`
+  (`KB` 0, `MB` 1, `GB` and above 2). `roundToLong()` rounds ties up, so
+  `1_500` bytes is `"2 KB"`, matching Finder.
+- If rounding reaches 1000 of a unit, move up to the next unit and re-round
+  there: `999_999` is `"1 MB"`, not `"1000 KB"`.
+- Trim trailing fractional zeros (and the decimal point itself if nothing
+  survives): `"2 MB"`, not `"2.0 MB"`.
+
+Earlier versions rounded everything to 3 significant figures instead. That
+rule matched every fixture the suite had at the time, but was wrong for
+most sizes under 10 MB (`4_132_383` is `"4.1 MB"`, not `"4.13 MB"`) and
+above 100 MB (`123_456_789` is `"123.5 MB"`, not `"123 MB"`).
+
+### `trimZeros` forces `Locale.ROOT`
 `String.format("%.2f", value)` without an explicit locale uses the JVM's
 default locale, which in several European locales renders a decimal comma
 instead of a period ("1,5" instead of "1.5") -- would silently produce wrong

@@ -78,7 +78,7 @@ class HumanSizeSpec :
             context("with a gigabyte-scale value") {
                 beforeEach { bytes = 5_240_000_000 }
 
-                it("keeps 2 decimal places at 3 significant figures (not truncated to 1)") {
+                it("shows two decimal places") {
                     result shouldBe "5.24 GB"
                 }
             }
@@ -88,6 +88,104 @@ class HumanSizeSpec :
 
                 it("trims both trailing decimal digits") {
                     result shouldBe "2 MB"
+                }
+            }
+
+            context("with a kilobyte value under 10") {
+                beforeEach { bytes = 1_234 }
+
+                it("rounds to whole kilobytes") {
+                    result shouldBe "1 KB"
+                }
+            }
+
+            context("with a kilobyte value that has a fraction") {
+                beforeEach { bytes = 2_579 }
+
+                it("rounds to the nearest kilobyte") {
+                    result shouldBe "3 KB"
+                }
+            }
+
+            context("with a megabyte value under 10") {
+                beforeEach { bytes = 4_132_383 }
+
+                it("shows one decimal place, not two") {
+                    result shouldBe "4.1 MB"
+                }
+            }
+
+            context("with a megabyte value whose second decimal would round") {
+                beforeEach { bytes = 5_243_887 }
+
+                it("drops the second decimal place") {
+                    result shouldBe "5.2 MB"
+                }
+            }
+
+            context("with a megabyte value at 100 or more") {
+                beforeEach { bytes = 123_456_789 }
+
+                it("still shows one decimal place") {
+                    result shouldBe "123.5 MB"
+                }
+            }
+
+            context("with a gigabyte value at 10 or more") {
+                beforeEach { bytes = 12_345_678_901 }
+
+                it("still shows two decimal places") {
+                    result shouldBe "12.35 GB"
+                }
+            }
+
+            context("with a terabyte value") {
+                beforeEach { bytes = 1_234_567_890_123 }
+
+                it("shows two decimal places") {
+                    result shouldBe "1.23 TB"
+                }
+            }
+
+            context("when rounding reaches 1000 of a unit") {
+                context("just below the kilobyte limit") {
+                    beforeEach { bytes = 999_499 }
+
+                    it("stays in KB") {
+                        result shouldBe "999 KB"
+                    }
+                }
+
+                context("with 999999 bytes") {
+                    beforeEach { bytes = 999_999 }
+
+                    it("moves up to MB") {
+                        result shouldBe "1 MB"
+                    }
+                }
+
+                context("just below the megabyte limit") {
+                    beforeEach { bytes = 999_949_999 }
+
+                    it("stays in MB") {
+                        result shouldBe "999.9 MB"
+                    }
+                }
+
+                context("with 999960000 bytes") {
+                    beforeEach { bytes = 999_960_000 }
+
+                    it("moves up to GB") {
+                        result shouldBe "1 GB"
+                    }
+                }
+
+                context("with 999995000000 bytes") {
+                    beforeEach { bytes = 999_995_000_000 }
+
+                    it("moves up to TB") {
+                        result shouldBe "1 TB"
+                    }
                 }
             }
         }

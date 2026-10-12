@@ -5,7 +5,6 @@ import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.ln
-import kotlin.math.log10
 import kotlin.math.roundToLong
 
 /**
@@ -15,6 +14,7 @@ import kotlin.math.roundToLong
  */
 object Humane {
     private val sizeUnits = listOf("KB", "MB", "GB", "TB", "PB", "EB")
+    private val decimalPlaces = listOf(0, 1, 2, 2, 2, 2)
 
     /** Humane.humanSize(225_935) == "226 KB" */
     fun humanSize(bytes: Long): String {
@@ -23,9 +23,13 @@ object Humane {
 
         var exp = floor(ln(bytes.toDouble()) / ln(1000.0)).toInt()
         if (exp > sizeUnits.size) exp = sizeUnits.size
-        val value = bytes.toDouble() / Math.pow(1000.0, exp.toDouble())
+        var value = roundForUnit(bytes, exp)
+        if (value >= 1000 && exp < sizeUnits.size) {
+            exp++
+            value = roundForUnit(bytes, exp)
+        }
 
-        return "${formatSignificant(value, 3)} ${sizeUnits[exp - 1]}"
+        return "${trimZeros(value, decimalPlaces[exp - 1])} ${sizeUnits[exp - 1]}"
     }
 
     /** Humane.distanceInTime(at, relativeTo) == "3 minutes ago" */
@@ -90,12 +94,18 @@ object Humane {
         unit: String,
     ) = if (count == 1L) "1 $unit" else "$count ${unit}s"
 
-    private fun formatSignificant(
+    private fun roundForUnit(
+        bytes: Long,
+        exp: Int,
+    ): Double {
+        val scale = Math.pow(10.0, decimalPlaces[exp - 1].toDouble())
+        return (bytes.toDouble() / Math.pow(1000.0, exp.toDouble()) * scale).roundToLong() / scale
+    }
+
+    private fun trimZeros(
         value: Double,
-        sigFigs: Int,
+        decimals: Int,
     ): String {
-        val magnitude = floor(log10(value)).toInt() + 1
-        val decimals = (sigFigs - magnitude).coerceAtLeast(0)
         var s = String.format(Locale.ROOT, "%.${decimals}f", value)
         if (s.contains(".")) {
             s = s.trimEnd('0').trimEnd('.')
