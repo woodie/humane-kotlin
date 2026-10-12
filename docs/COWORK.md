@@ -29,7 +29,7 @@ inspection, verified via `make build`/`make test` on the user's own Mac (JDK 17+
 
 ## Current status
 
-`v0.1.1`, **published to Maven Central** as `com.netpress:humane-kotlin`. Consumed by
-`huck` via a plain `implementation("com.netpress:humane-kotlin:0.1.1")` -- no sibling
+`v0.1.2`, **published to Maven Central** as `com.netpress:humane-kotlin`. Consumed by
+`huck` via a plain `implementation("com.netpress:humane-kotlin:0.1.2")` -- no sibling
 checkout or composite build (`includeBuild`) needed anymore; that was true through
 `v0.1.0` only.
